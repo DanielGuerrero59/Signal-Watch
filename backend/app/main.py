@@ -8,7 +8,7 @@ app = FastAPI(title="SignalWatch")  # creates actual server object, app is our i
 # possible in python ^^^
 
 
-@app.get("/health")  # decorator function (start again tomorrow) 
+@app.get("/health")  # decorator function 
 #.get() is a built in function from fastapi to handle get requests from HTTP
 
 
