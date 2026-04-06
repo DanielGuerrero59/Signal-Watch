@@ -9,8 +9,23 @@ app = FastAPI(title="SignalWatch")  # creates actual server object, app is our i
 
 
 @app.get("/health")  # decorator function 
-#.get() is a built in function from fastapi to handle get requests from HTTP
-
-
 def health_check():   #standard python function syntax 
-    return {"status": "ok"}         
+    return {"status": "ok"}      
+
+
+@app.get("/about", status_code= 200)  #code 200 to allow client to know data has been sent back 
+def about_check(): 
+    return {
+        "project" : "SignalWatch",
+        "version" :  "1",
+        "description" : "Ingests media to human insight"
+        }
+
+
+
+@app.get("/status", status_code =200) 
+def status(): 
+    return {
+        "Start Time" : "4/6/2026"
+    }
+
