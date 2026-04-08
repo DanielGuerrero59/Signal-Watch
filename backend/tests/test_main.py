@@ -28,4 +28,21 @@ def test_status():
     assert check.status_code == 200 
 
 def test_upload_valid(): 
+    checkStatus = client.post("/upload", json ={ 
+        "filename" : "TestFile", 
+        "size"  : 20, 
+        "description" : "ValidFileDesc"
+    })
+    assert checkStatus.status_code == 201
     
+
+
+def test_upload_invalid(): 
+    invalidUpload = client.post("/upload", json= { 
+        "filename" : 20, 
+        "size"  : 20, 
+        "description" : "ValidFileDesc"
+    })
+    assert invalidUpload.status_code == 422
+
+
