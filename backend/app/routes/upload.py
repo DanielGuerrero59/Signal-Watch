@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from fastapi import APIRouter 
 
-
 class UploadRequest(BaseModel): 
     filename: str 
     size: int 
