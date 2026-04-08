@@ -1,0 +1,4 @@
+**(CURRENTLY IN PROGRESS)** 
+
+SignalWatch is a backend-driven web application that ingests real-world data—documents (PDFs/text), audio recordings, images, and time-series metrics—and processes them through AI models to detect meaningful changes, trends, and insights, returning clear, human-readable explanations of what is happening and why. It works by exposing a FastAPI-based API (your “waiter”) that receives data from a frontend or external source, runs it through pipelines like speech-to-text, summarization, and anomaly detection using HuggingFace models, and sends structured results back to the client. The system is built using Python (FastAPI, HuggingFace Transformers) 
+for AI and backend logic, C++ (optional) for performance-critical components, PostgreSQL/Redis for data handling, Docker for environment management, and a simple React or Next.js frontend for user interaction.
