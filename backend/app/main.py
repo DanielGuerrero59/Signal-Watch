@@ -8,6 +8,7 @@ from app.routes.upload import router
 app = FastAPI(title="SignalWatch")  # creates actual server object, app is our instance 
 # the constructor has optional arguments, and we use the keyword way of assigning the value directly 
 # possible in python ^^^
+
 app.include_router(router)
 
 @app.get("/health")  # decorator function 

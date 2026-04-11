@@ -8,6 +8,7 @@ def save_file(filename: str, contents: bytes):
     path = f"uploads/{filename}"
     #write bytes = wb 
     #with keyword closes path immediately for us when exiting 
+    #open(path, mode) , creates path and we write contents into it, putting it in disk 
     with open(path, "wb") as f: 
         f.write(contents)
     return path
