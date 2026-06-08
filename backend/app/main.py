@@ -1,34 +1,32 @@
-from fastapi import FastAPI  
-from app.routes.upload import router 
+from fastapi import FastAPI
+# Imports the router we defined in upload.py so main.py knows about those routes
+from app.routes.upload import router
 
-# fastapi is the module(toolbox), 
-# from keyword in python is typically used to import specific items from a module 
-# we are importing the FastAPI class from the fastapi module/TOOLBOX
+# FastAPI is the module (toolbox)
+# We are importing the FastAPI class from the fastapi module
+app = FastAPI(title="SignalWatch")  # Creates the actual server object — app is our instance
 
-app = FastAPI(title="SignalWatch")  # creates actual server object, app is our instance 
-# the constructor has optional arguments, and we use the keyword way of assigning the value directly 
-# possible in python ^^^
-
+# Attaches the upload router to our app
+# Without this line, none of the routes in upload.py would be reachable
 app.include_router(router)
 
-@app.get("/health")  # decorator function 
-def health_check():   #standard python function syntax 
-    return {"status": "ok"}      
+# Decorator registers health_check as the handler for GET /health
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
-
-@app.get("/about", status_code= 200)  #code 200 to allow client to know data has been sent back 
-def about_check(): 
+# Returns basic project info — useful for anyone consuming the API to know what they're talking to
+@app.get("/about", status_code=200)
+def about_check():
     return {
-        "project" : "SignalWatch",
-        "version" :  "1",
-        "description" : "Ingests media to human insight"
-        }
-
-
-
-@app.get("/status", status_code =200) 
-def status(): 
-    return {
-        "Start Time" : "4/6/2026"
+        "project": "SignalWatch",
+        "version": "1",
+        "description": "Ingests media to human insight"
     }
 
+# Returns operational info like when the project started
+@app.get("/status", status_code=200)
+def status():
+    return {
+        "Start Time": "4/6/2026"
+    }
