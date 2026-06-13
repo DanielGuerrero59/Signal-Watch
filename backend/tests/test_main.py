@@ -31,27 +31,6 @@ def test_status():
     assert check.status_code == 200
 
 
-def test_upload_valid():
-    # Sends a POST with valid JSON — tests that a well-formed request gets accepted
-    checkStatus = client.post("/upload", json={
-        "filename": "TestFile",
-        "size": 20,
-        "description": "ValidFileDesc"
-    })
-    assert checkStatus.status_code == 201
-
-
-def test_upload_invalid():
-    # filename should be a string but we're passing an integer (20)
-    # Pydantic catches this mismatch and automatically returns 422 Unprocessable Entity
-    invalidUpload = client.post("/upload", json={
-        "filename": 20,
-        "size": 20,
-        "description": "ValidFileDesc"
-    })
-    #422 meaning something within the format of the data itself was incorrect (such as a mismatch)
-    assert invalidUpload.status_code == 422
-
 
 
 def test_upload_valid_pdf(): 
@@ -65,6 +44,23 @@ def test_upload_empty_file():
     assert uploaded_empty.status_code == 400 
 
 
+def test_upload_too_large(): 
+    # +1 above our file limit to properly test larger files 
+    large_file = client.post("/upload", files = {"file": ("big.pdf", b"x" * (10 * 1024 * 1024 + 1), "application/pdf")})
+    assert large_file.status_code == 413
+
+
+def test_upload_wrong_type(): 
+    wrong_extension = client.post("/upload", files = {"file": ("badtype.js", b"random info", "text/javascript")})
+    # HTTP 415 for wrong types of data that cannot be supported 
+    assert wrong_extension.status_code == 415
+
+
+def test_upload_valid_other_types(): 
+    extensions = [".txt", ".png", ".jpg"]
+    for ext in extensions: 
+        valid_extension = client.post("/upload", files={"file": (f"test{ext}", b"fake jpg content", "image/jpg")})
+        assert valid_extension.status_code == 201
 
 
 

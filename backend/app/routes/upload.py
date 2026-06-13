@@ -57,3 +57,6 @@ async def upload_file(file: UploadFile):
         "Size": len(contents),
         "Saved_to": path
     }
+
+
+   
