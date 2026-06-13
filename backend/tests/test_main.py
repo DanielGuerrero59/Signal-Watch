@@ -49,4 +49,24 @@ def test_upload_invalid():
         "size": 20,
         "description": "ValidFileDesc"
     })
+    #422 meaning something within the format of the data itself was incorrect (such as a mismatch)
     assert invalidUpload.status_code == 422
+
+
+
+def test_upload_valid_pdf(): 
+    response = client.post("/upload", files={"file": ("test.pdf", b"fake pdf content", "application/pdf")})
+    assert response.status_code == 201 
+
+
+def test_upload_empty_file(): 
+    uploaded_empty = client.post("/upload", files = {"file":  ("empty.txt", b"", "text/plain")})
+    # 400 means data format is correct, but inside logic is irrational (empty file)
+    assert uploaded_empty.status_code == 400 
+
+
+
+
+
+
+
