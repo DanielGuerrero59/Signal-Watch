@@ -26,7 +26,7 @@ ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg"}
 async def upload_file(file: UploadFile):
     # UploadFile is FastAPI's container for incoming files
     # .read() reads through file in form of bytes
-    # await makes program wait to finish reading the file before continuing
+    # await makes program wait to finish reading the file before continuing, needs async with it (pair duo)
     contents = await file.read()
 
     # --- Validation guards (bouncer checks) ---
