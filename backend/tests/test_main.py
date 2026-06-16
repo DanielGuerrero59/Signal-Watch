@@ -29,13 +29,20 @@ def test_about_check():
 def test_status():
     check = client.get("/status")
     assert check.status_code == 200
-
+    assert check.json() == { 
+        "Start Time": "4/6/2026"
+    }
 
 
 
 def test_upload_valid_pdf(): 
     response = client.post("/upload", files={"file": ("test.pdf", b"fake pdf content", "application/pdf")})
     assert response.status_code == 201 
+    assert response.json() == {
+    "Filename": "test.pdf",
+    "Size": 16,
+    "Saved_to": "uploads/test.pdf"
+}
 
 
 def test_upload_empty_file(): 
