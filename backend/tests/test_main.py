@@ -7,6 +7,10 @@ from app.main import app
 # Creates fake browser pointed at our app
 client = TestClient(app)
 
+import pytest
+
+
+
 def test_health_check():
     # Sends a GET request to /health and stores the response
     response = client.get("/health")
@@ -34,14 +38,31 @@ def test_status():
     }
 
 
+@pytest.fixture
+def cleanup():
+    # before test — nothing needed here
+    yield
+    # after test — delete files from uploads/
+    if os.path.exists("uploads"):
+        # list of file names inside directory
+        for filename in os.listdir("uploads")
+        #deletes every file in directory after test 
+        os.remove(f"uploads/{filename}")
 
-def test_upload_valid_pdf(): 
+
+    
+    
+
+
+def test_upload_valid_pdf(cleanup): 
     response = client.post("/upload", files={"file": ("test.pdf", b"fake pdf content", "application/pdf")})
     assert response.status_code == 201 
     assert response.json() == {
     "Filename": "test.pdf",
     "Size": 16,
     "Saved_to": "uploads/test.pdf"
+    
+
 }
 
 
@@ -63,7 +84,7 @@ def test_upload_wrong_type():
     assert wrong_extension.status_code == 415
 
 
-def test_upload_valid_other_types(): 
+def test_upload_valid_other_types(cleanup): 
     extensions = [".txt", ".png", ".jpg"]
     for ext in extensions: 
         valid_extension = client.post("/upload", files={"file": (f"test{ext}", b"fake jpg content", "image/jpg")})
