@@ -1,3 +1,5 @@
+import pytest
+import os 
 # TestClient is a fake browser that sends requests without needing the server to be running
 from fastapi.testclient import TestClient
 
@@ -7,7 +9,8 @@ from app.main import app
 # Creates fake browser pointed at our app
 client = TestClient(app)
 
-import pytest
+
+
 
 
 
@@ -45,9 +48,9 @@ def cleanup():
     # after test — delete files from uploads/
     if os.path.exists("uploads"):
         # list of file names inside directory
-        for filename in os.listdir("uploads")
+        for filename in os.listdir("uploads"):
         #deletes every file in directory after test 
-        os.remove(f"uploads/{filename}")
+            os.remove(f"uploads/{filename}")
 
 
     
@@ -70,18 +73,21 @@ def test_upload_empty_file():
     uploaded_empty = client.post("/upload", files = {"file":  ("empty.txt", b"", "text/plain")})
     # 400 means data format is correct, but inside logic is irrational (empty file)
     assert uploaded_empty.status_code == 400 
+    assert uploaded_empty.json() == {"detail": "File is Empty"}
 
 
 def test_upload_too_large(): 
     # +1 above our file limit to properly test larger files 
     large_file = client.post("/upload", files = {"file": ("big.pdf", b"x" * (10 * 1024 * 1024 + 1), "application/pdf")})
     assert large_file.status_code == 413
+    assert large_file.json() == {"detail": "File Too Large"}
 
 
 def test_upload_wrong_type(): 
     wrong_extension = client.post("/upload", files = {"file": ("badtype.js", b"random info", "text/javascript")})
     # HTTP 415 for wrong types of data that cannot be supported 
     assert wrong_extension.status_code == 415
+    assert wrong_extension.json() == {"detail": "File Type is Not Allowed"}
 
 
 def test_upload_valid_other_types(cleanup): 
