@@ -1,16 +1,10 @@
-from pydantic import BaseModel
+
 from fastapi import APIRouter
 from fastapi import UploadFile, File
 from app.services.storage import save_file
 from fastapi import HTTPException
 import os
 
-# Pydantic model — defines the shape and types of data we expect
-# Pydantic automatically rejects requests that don't match these types
-class UploadRequest(BaseModel):
-    filename: str
-    size: int
-    description: str
 
 
 # APIRouter lets us define routes in a separate file from main.py
