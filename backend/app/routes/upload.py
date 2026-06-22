@@ -13,7 +13,7 @@ router = APIRouter()
 
 # Set of allowed file extensions — using a set for fast lookup
 ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg"}
-
+    
 # Registers this function as the handler for POST requests to /upload
 # status_code=201 tells FastAPI to return 201 Created on success
 @router.post("/upload", status_code=201)
