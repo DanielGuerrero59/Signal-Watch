@@ -6,6 +6,10 @@ from fastapi.testclient import TestClient
 # Goes to app folder to main.py and imports our app server variable
 from app.main import app
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Creates fake browser pointed at our app
 client = TestClient(app)
 
@@ -46,11 +50,11 @@ def cleanup():
     # before test — nothing needed here
     yield
     # after test — delete files from uploads/
-    if os.path.exists("uploads"):
+    if os.path.exists(os.getenv("UPLOAD_DIR")):
         # list of file names inside directory
-        for filename in os.listdir("uploads"):
+        for filename in os.listdir(os.getenv("UPLOAD_DIR")):
         #deletes every file in directory after test 
-            os.remove(f"uploads/{filename}")
+            os.remove(f"{os.getenv('UPLOAD_DIR')}/{filename}")
 
 
     
