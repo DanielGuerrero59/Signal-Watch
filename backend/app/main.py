@@ -1,6 +1,15 @@
 from fastapi import FastAPI
 # Imports the router we defined in upload.py so main.py knows about those routes
+
+import logging 
+
 from app.routes.upload import router
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # FastAPI is the module (toolbox)
 # We are importing the FastAPI class from the fastapi module
