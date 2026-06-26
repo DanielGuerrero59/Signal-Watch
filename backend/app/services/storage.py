@@ -1,10 +1,15 @@
 import os
+import logging 
 from fastapi import HTTPException
 from dotenv import load_dotenv
 
 
 # reading copying every line of our env file to python
 load_dotenv()
+
+
+logger = logging.getLogger(__name__)
+
 
 def save_file(filename: str, contents: bytes):
     # os.makedirs creates the uploads folder if it doesn't exist
@@ -27,10 +32,12 @@ def save_file(filename: str, contents: bytes):
             f.write(contents)  # Writes the raw bytes to disk
 
     
-    except TypeError: 
+    except TypeError as e: 
+        logger.critical(f"UPLOAD_DIR env variable not set:  {e}")
         raise HTTPException(status_code = 500, detail = "Server misconfigured: UPLOAD_DIR not set")
 
-    except OSError: 
+    except OSError as e: 
+        logger.error(f"Failed to save file: {e}")
         raise HTTPException(status_code = 500, detail = "Failed to save file: server filesystem error")
     # Returns the path so the caller knows where the file ended up
     return path
