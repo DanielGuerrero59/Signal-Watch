@@ -28,7 +28,7 @@ def save_file(filename: str, contents: bytes):
         # open(path, "wb") opens the file at that path in write-bytes mode
         # "wb" = write bytes — needed because files are binary data, not plain text
         # the "with" keyword automatically closes the file when we're done — no cleanup needed
-        with open(path, "wb") as f:
+        with open(path, "wb") as f: 
             f.write(contents)  # Writes the raw bytes to disk
 
     
