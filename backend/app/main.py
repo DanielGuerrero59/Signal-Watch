@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 # Imports the router we defined in upload.py so main.py knows about those routes
-
+from app.database import engine, Base
+from app import models
 import logging 
 
 from app.routes.upload import router
@@ -14,6 +15,10 @@ logging.basicConfig(
 # FastAPI is the module (toolbox)
 # We are importing the FastAPI class from the fastapi module
 app = FastAPI(title="SignalWatch")  # Creates the actual server object — app is our instance
+
+
+
+Base.metadata.create_all(bind=engine)
 
 # Attaches the upload router to our app
 # Without this line, none of the routes in upload.py would be reachable
