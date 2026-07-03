@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime 
 from app.database import Base 
 
-
+#One form of Base being used, other models can have different structure.
 class Upload(Base): 
     __tablename__ = "uploads" 
 
