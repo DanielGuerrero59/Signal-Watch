@@ -23,6 +23,7 @@ SessionLocal = sessionmaker(autocommit= False, autoflush = False, bind = engine)
 Base = declarative_base() 
 
 
+# yields when letting upload route go through safeguards 
 def get_db(): 
     db = SessionLocal()
     try: 

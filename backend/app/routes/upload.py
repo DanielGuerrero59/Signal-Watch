@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.services.storage import save_file
 from app.database import get_db
 from app.models import Upload
+from app.schemas import UploadResponse  
 import os
 
 
@@ -16,6 +17,7 @@ ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg"}
 # Registers this function as the handler for POST requests to /upload
 # status_code=201 tells FastAPI to return 201 Created on success
 @router.post("/upload", status_code=201)
+#Depends(get_db) opens a fresh connection to the database, hands functionality to db, and closes on its own. 
 async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
     # UploadFile is FastAPI's container for incoming files
     # .read() reads through file in form of bytes
@@ -60,4 +62,17 @@ async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
     }
 
 
+@router.get("/uploads", response_model=list[UploadResponse])
+def list_uploads(db: Session = Depends(get_db)): 
+    uploads = db.query(Upload).all()
+    return uploads
    
+
+
+
+@router.get("/uploads/{upload_id}", response_model=UploadResponse)
+def get_upload(upload_id: int, db: Session = Depends(get_db)):
+    upload = db.query(Upload).filter(Upload.id == upload_id).first()
+    if upload is None:
+        raise HTTPException(status_code=404, detail="Upload not found")
+    return upload
