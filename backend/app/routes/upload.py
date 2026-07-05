@@ -61,15 +61,24 @@ async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
         "Saved_to": path
     }
 
-
+#No exception needed here, empty list if nothing 
+# Query with upload for PostGres, client gets response model of UploadResponse 
 @router.get("/uploads", response_model=list[UploadResponse])
-def list_uploads(db: Session = Depends(get_db)): 
-    uploads = db.query(Upload).all()
+def list_uploads(file_type: str | None = None, db: Session = Depends(get_db)):
+    #creates query object
+    query = db.query(Upload)
+
+    if file_type is not None: 
+        #filters query object
+        query = query.filter(Upload.file_type == file_type)
+
+    #translated and sent to Postgres
+    uploads = query.all()
     return uploads
    
 
 
-
+# needs exception so client gets more info other than null on their end 
 @router.get("/uploads/{upload_id}", response_model=UploadResponse)
 def get_upload(upload_id: int, db: Session = Depends(get_db)):
     upload = db.query(Upload).filter(Upload.id == upload_id).first()

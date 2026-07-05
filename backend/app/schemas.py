@@ -14,6 +14,7 @@ class UploadResponse(BaseModel):
 
 
     class Config: 
+        # SQLAlchemy uses dot notaiton, this makes it use dot notation and not brackets
         from_attributes = True
 
 
