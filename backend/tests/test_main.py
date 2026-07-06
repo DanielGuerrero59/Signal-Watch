@@ -5,8 +5,9 @@ from fastapi.testclient import TestClient
 
 # Goes to app folder to main.py and imports our app server variable
 from app.main import app
-
+from app.models import Upload 
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -15,6 +16,18 @@ client = TestClient(app)
 
 
 
+def test_upload_creates_db_row(cleanup, test_db):
+    response = client.post(
+        "/upload",
+        files={"file": ("dbtest.pdf", b"some pdf content", "application/pdf")}
+    )
+    assert response.status_code == 201
+
+    rows = test_db.query(Upload).all()
+    assert len(rows) == 1
+    assert rows[0].filename == "dbtest.pdf"
+    assert rows[0].file_type == ".pdf"
+    assert rows[0].size == 16
 
 
 
@@ -61,16 +74,18 @@ def cleanup():
     
 
 
-def test_upload_valid_pdf(cleanup): 
+def test_upload_valid_pdf(cleanup, test_db): 
     response = client.post("/upload", files={"file": ("test.pdf", b"fake pdf content", "application/pdf")})
     assert response.status_code == 201 
     assert response.json() == {
+    "id": 1,
     "Filename": "test.pdf",
     "Size": 16,
     "Saved_to": "uploads/test.pdf"
+}
     
 
-}
+
 
 
 def test_upload_empty_file(): 
@@ -94,12 +109,11 @@ def test_upload_wrong_type():
     assert wrong_extension.json() == {"detail": "File Type is Not Allowed"}
 
 
-def test_upload_valid_other_types(cleanup): 
+def test_upload_valid_other_types(cleanup, test_db): 
     extensions = [".txt", ".png", ".jpg"]
     for ext in extensions: 
         valid_extension = client.post("/upload", files={"file": (f"test{ext}", b"fake jpg content", "image/jpg")})
         assert valid_extension.status_code == 201
-
 
 
 

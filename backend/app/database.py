@@ -14,7 +14,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 #Create engine that bridges to Postgres
 engine  = create_engine(DATABASE_URL) 
 
-# makes sessions that use connections waiting around in the engine, 
+# Makes sessions that use connections waiting around in the engine, 
 #autocommit off makes committing only occur when explicitely told so. 
 # autoflush=False: SQLAlchemy won't auto-send pending changes to Postgres before queries.
 SessionLocal = sessionmaker(autocommit= False, autoflush = False, bind = engine)
