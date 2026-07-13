@@ -22,7 +22,7 @@ def test_upload_creates_db_row(cleanup, test_db):
         files={"file": ("dbtest.pdf", b"some pdf content", "application/pdf")}
     )
     assert response.status_code == 201
-
+    # tests if the 1 row expected from uploading the fake file is present and accurate to the metadata written 
     rows = test_db.query(Upload).all()
     assert len(rows) == 1
     assert rows[0].filename == "dbtest.pdf"

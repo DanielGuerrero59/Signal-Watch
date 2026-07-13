@@ -27,7 +27,7 @@ def override_get_db():
     finally:
         db.close()
 
-
+# connects to database but overrides to the separate test database instead 
 app.dependency_overrides[get_db] = override_get_db
 
 
@@ -40,6 +40,7 @@ def test_db():
         yield db
     finally:
         db.close()
+        #deletes all tables from the test database 
         Base.metadata.drop_all(bind=test_engine)
 
 
