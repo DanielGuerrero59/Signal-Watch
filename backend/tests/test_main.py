@@ -83,8 +83,40 @@ def test_upload_valid_pdf(cleanup, test_db):
     "Size": 16,
     "Saved_to": "uploads/test.pdf"
 }
-    
 
+
+def test_list_uploads_empty(test_db): 
+    response = client.get("/uploads")
+    assert response.json() == []    
+
+
+
+
+
+
+def test_list_uploads_populated(cleanup, test_db): 
+    client.post("/upload", files={"file":("a.pdf", b"first content", "application.pdf")})
+    client.post("/upload", files={"file": ("b.txt", b"second content:", "text/plain")})
+
+    response = client.get("/uploads")
+    assert response.status_code == 200
+    assert len(response.json()) ==2 
+
+
+
+
+
+def test_get_upload_by_id(cleanup, test_db): 
+    client.post("/upload", files ={"file": ("findme.pdf", b"pdf bytes", "application.pdf")})
+
+    response = client.get("/uploads/1")
+    assert response.status_code ==200 
+    assert response.json()["filename"] == "findme.pdf"
+
+    #Not found case 
+    missing = client.get("/uploads/999") 
+    assert missing.status_code == 404 
+    assert missing.json() == {"detail": "Upload not found"} 
 
 
 
