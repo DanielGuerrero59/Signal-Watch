@@ -18,6 +18,7 @@ async def save_file(file, filename: str, max_size: int, chunk_size: int = 1024 *
         path = f"{os.getenv('UPLOAD_DIR')}/{filename}"
 
         total_size = 0
+        too_large = False
 
         # Open the destination file, stream chunks into it
         with open(path, "wb") as f:
@@ -31,11 +32,15 @@ async def save_file(file, filename: str, max_size: int, chunk_size: int = 1024 *
 
                 # Enforce max size mid-stream — abort and clean up if exceeded
                 if total_size > max_size:
-                    f.close()
-                    os.remove(path)
-                    raise HTTPException(status_code=413, detail="File Too Large")
+                    too_large = True
+                    break
 
                 f.write(chunk)
+
+
+        if too_large: 
+            os.remove(path)
+            raise HTTPException(status_code = 413, detail = "File Too Large")
 
         # Empty file guard — checked AFTER writing (file is 0 bytes on disk)
         if total_size == 0:

@@ -20,23 +20,10 @@ ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg"}
 #Depends(get_db) opens a fresh connection to the database, hands functionality to db, and closes on its own. 
 async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
     # UploadFile is FastAPI's container for incoming files
-    # .read() reads through file in form of bytes
-    # await makes program wait to finish reading the file before continuing, needs async with it (pair duo)
-    contents = await file.read()
+    
 
-    # --- Validation guards (bouncer checks) ---
-    # Always validate before touching disk
-
-    # Guard 1: reject empty files
-    if len(contents) == 0:
-        raise HTTPException(status_code=400, detail="File is Empty")
-
-    # Guard 2: reject files over 10MB
-    # 10 * 1024 * 1024 = 10,485,760 bytes = 10MB
-    if len(contents) > 10 * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="File Too Large")
-
-    # Guard 3: reject disallowed file types
+    
+    # Guard: reject disallowed file types
     # splitext splits "report.pdf" into ("report", ".pdf") — we take index [1] for the extension
     # .lower() normalises ".PDF" to ".pdf" so capitalisation doesn't matter
     extension = os.path.splitext(file.filename)[1].lower()
@@ -44,11 +31,13 @@ async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
         raise HTTPException(status_code=415, detail="File Type is Not Allowed")
 
     # All checks passed — safe to write to disk now
-    path = save_file(file.filename, contents)
+    path, size = await save_file(file, file.filename, 10 * 1024 * 1024)
+
+
 
 
     #Write metadata row to DB 
-    upload_row = Upload(filename = file.filename, size = len(contents), file_type = extension, path=path)
+    upload_row = Upload(filename = file.filename, size = size, file_type = extension, path=path)
     db.add(upload_row) 
     db.commit() 
     db.refresh(upload_row) 
@@ -57,7 +46,7 @@ async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
     return {
         "id":  upload_row.id,
         "Filename": file.filename,
-        "Size": len(contents),
+        "Size": size,
         "Saved_to": path
     }
 
