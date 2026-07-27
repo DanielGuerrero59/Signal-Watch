@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime 
+from sqlalchemy import Column, Integer, String, DateTime, Text
 from datetime import datetime 
 from app.database import Base 
 
@@ -13,4 +13,5 @@ class Upload(Base):
     file_type = Column(String, nullable = False)
     path = Column(String, nullable = False)
     uploaded_at = Column(DateTime, default=datetime.utcnow)
+    summary = Column(Text, nullable=True)
 
