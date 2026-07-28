@@ -1,10 +1,11 @@
-from fastapi import APIRouter, UploadFile, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.services.storage import save_file
 from app.database import get_db
 from app.models import Upload
 from app.schemas import UploadResponse  
 import os
+from app.services.background import process_upload
 
 
 # APIRouter lets us define routes in a separate file from main.py
@@ -18,7 +19,7 @@ ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg"}
 # status_code=201 tells FastAPI to return 201 Created on success
 @router.post("/upload", status_code=201)
 #Depends(get_db) opens a fresh connection to the database, hands functionality to db, and closes on its own. 
-async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
+async def upload_file(file: UploadFile, background_tasks: BackgroundTasks , db: Session = Depends(get_db)):
     # UploadFile is FastAPI's container for incoming files
     
 
@@ -41,6 +42,9 @@ async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
     db.add(upload_row) 
     db.commit() 
     db.refresh(upload_row) 
+
+
+    background_tasks.add_task(process_upload, upload_row.id)
 
     # Returns a 201 response with details about the saved file
     return {

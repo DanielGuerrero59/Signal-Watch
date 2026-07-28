@@ -32,7 +32,7 @@ def process_upload(upload_id: int):
         
         # 4. Save it to the row
         upload.summary = summary  # ← your line: assign the summary to the row's column
-        db.commit()           # ← what does commit do again? Say it in one sentence in your reply
+        db.commit()           
         
         logger.info(f"Summarized upload {upload_id}")
     
