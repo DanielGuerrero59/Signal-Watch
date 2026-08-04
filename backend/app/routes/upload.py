@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models import Upload
 from app.schemas import UploadResponse  
 import os
-from app.services.background import process_upload
+from app.services.dispatch import run_ai_pipeline
 
 
 # APIRouter lets us define routes in a separate file from main.py
@@ -13,7 +13,7 @@ from app.services.background import process_upload
 router = APIRouter()
 
 # Set of allowed file extensions — using a set for fast lookup
-ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg"}
+ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg", ".mp3", ".wav", ".m4a"}
     
 # Registers this function as the handler for POST requests to /upload
 # status_code=201 tells FastAPI to return 201 Created on success
@@ -44,7 +44,7 @@ async def upload_file(file: UploadFile, background_tasks: BackgroundTasks , db: 
     db.refresh(upload_row) 
 
 
-    background_tasks.add_task(process_upload, upload_row.id)
+    background_tasks.add_task(run_ai_pipeline, upload_row.id, path, extension)
 
     # Returns a 201 response with details about the saved file
     return {

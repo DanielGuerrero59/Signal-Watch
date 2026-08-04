@@ -14,4 +14,5 @@ class Upload(Base):
     path = Column(String, nullable = False)
     uploaded_at = Column(DateTime, default=datetime.utcnow)
     summary = Column(Text, nullable=True)
+    transcript = Column(Text, nullable=True)
 

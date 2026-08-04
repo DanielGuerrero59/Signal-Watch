@@ -11,6 +11,7 @@ class UploadResponse(BaseModel):
     file_type: str 
     uploaded_at: datetime
     summary: str | None
+    transcript: str | None = None
 
 
 
