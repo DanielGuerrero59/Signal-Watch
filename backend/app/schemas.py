@@ -12,6 +12,7 @@ class UploadResponse(BaseModel):
     uploaded_at: datetime
     summary: str | None
     transcript: str | None = None
+    anomalies: list[dict] | None = None
 
 
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text
+from sqlalchemy import Column, Integer, String, DateTime, Text, JSON
 from datetime import datetime 
 from app.database import Base 
 
@@ -15,4 +15,5 @@ class Upload(Base):
     uploaded_at = Column(DateTime, default=datetime.utcnow)
     summary = Column(Text, nullable=True)
     transcript = Column(Text, nullable=True)
+    anomalies = Column(JSON, nullable=True)
 

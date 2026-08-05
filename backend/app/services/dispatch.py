@@ -2,6 +2,7 @@ from app.database import SessionLocal
 from app.models import Upload
 from app.services.summarize import summarize_text
 from app.services.transcribe import transcribe_audio
+from app.services.anomaly import detect_anomalies
 import traceback
 
 
@@ -28,6 +29,9 @@ def run_ai_pipeline(upload_id: int, file_path: str, extension: str) -> None:
             print("[DISPATCH] Routing to transcriber...")
             upload.transcript = transcribe_audio(file_path)
             print(f"[DISPATCH] Transcript generated: {upload.transcript[:60]}...")
+
+        elif extension == ".csv": 
+            upload.anomalies = detect_anomalies(file_path)
 
         db.commit()
         print("[DISPATCH] Committed to DB")
