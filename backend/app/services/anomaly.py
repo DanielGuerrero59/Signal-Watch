@@ -1,3 +1,4 @@
+#IsolationForest being the algorithm for spotting outliers 
 from sklearn.ensemble import IsolationForest
 import pandas as pd
 
@@ -11,12 +12,14 @@ def detect_anomalies(file_path: str) -> list[dict]:
     
     df = pd.read_csv(file_path)
 
-   
+   #iloc is for index location, : for all rows at the first "0th" column
+   # -1 to determine how many rows necessary, 1 to make it 1 column wide 
+   #necessary reshape due to scikit requiring 2d input samples 
     values = df.iloc[:, 0].values.reshape(-1, 1)
 
 
 
-    
+    #expects 15% of data to be an anomaly, seed value to keep constant results 
     model = IsolationForest(contamination=0.15, random_state=42)
 
     # fit_predict does two things at once:
@@ -26,20 +29,19 @@ def detect_anomalies(file_path: str) -> list[dict]:
     predictions = model.fit_predict(values)
 
     # score_samples returns how "anomalous" each point is — more negative = weirder.
-    # We use this so the API response tells the user HOW anomalous each flagged point is.
+    # Flags how anomalous a point is 
     scores = model.score_samples(values)
 
     # Build the result: only include points labeled -1 (anomalies).
     # Loop through with enumerate() so we know the row index of each point.
     anomalies = []
+    #zip to match up values, enumerate to properly count index 
     for i, (prediction, score) in enumerate(zip(predictions, scores)):
-        if prediction == -1:  # -1 means anomaly, +1 means normal
+        if prediction == -1:  
             anomalies.append({
-                "index": int(i),                    # which row in the CSV
-                "value": float(values[i][0]),       # the actual value
-                "score": float(score),              # how weird (more negative = weirder)
+                "index": int(i),                    
+                "value": float(values[i][0]),# grabs value and gets the only "1st" element in that row      
+                "score": float(score),              
             })
-    # Cast to Python-native types (int/float) so JSON serialization works —
-    # numpy's int64 and float64 aren't JSON-serializable by default.
-
+    
     return anomalies
