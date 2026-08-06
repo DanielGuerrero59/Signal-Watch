@@ -13,6 +13,7 @@ class UploadResponse(BaseModel):
     summary: str | None
     transcript: str | None = None
     anomalies: list[dict] | None = None
+    image_labels: list[dict] | None = None
 
 
 

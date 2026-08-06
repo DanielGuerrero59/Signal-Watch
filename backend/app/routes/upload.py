@@ -13,7 +13,7 @@ from app.services.dispatch import run_ai_pipeline
 router = APIRouter()
 
 # Set of allowed file extensions — using a set for fast lookup
-ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg", ".mp3", ".wav", ".m4a", ".csv"}
+ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg", ".jpeg", ".mp3", ".wav", ".m4a", ".csv"}
     
 # Registers this function as the handler for POST requests to /upload
 # status_code=201 tells FastAPI to return 201 Created on success

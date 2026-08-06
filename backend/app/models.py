@@ -16,4 +16,5 @@ class Upload(Base):
     summary = Column(Text, nullable=True)
     transcript = Column(Text, nullable=True)
     anomalies = Column(JSON, nullable=True)
+    image_labels = Column(JSON, nullable=True)   # NEW — list of label/score dicts
 
