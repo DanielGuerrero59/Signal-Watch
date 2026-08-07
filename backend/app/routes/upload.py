@@ -1,9 +1,11 @@
-from fastapi import APIRouter, UploadFile, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, UploadFile, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.services.storage import save_file
 from app.database import get_db
 from app.models import Upload
 from app.schemas import UploadResponse  
+from redis import Redis
+from rq import Queue
 import os
 from app.services.dispatch import run_ai_pipeline
 
@@ -12,6 +14,14 @@ from app.services.dispatch import run_ai_pipeline
 # Think of it as a section of the traffic director that handles upload-related routes
 router = APIRouter()
 
+
+# Connect to Redis and create a job queue.
+# This runs once at import — the connection is reused for every request.
+redis_conn = Redis(host="localhost", port=6379)
+queue = Queue(connection=redis_conn)
+
+
+
 # Set of allowed file extensions — using a set for fast lookup
 ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg", ".jpeg", ".mp3", ".wav", ".m4a", ".csv"}
     
@@ -19,7 +29,7 @@ ALLOWED_EXTENSIONS = {".pdf", ".txt", ".png", ".jpg", ".jpeg", ".mp3", ".wav", "
 # status_code=201 tells FastAPI to return 201 Created on success
 @router.post("/upload", status_code=201)
 #Depends(get_db) opens a fresh connection to the database, hands functionality to db, and closes on its own. 
-async def upload_file(file: UploadFile, background_tasks: BackgroundTasks , db: Session = Depends(get_db)):
+async def upload_file(file: UploadFile, db: Session = Depends(get_db)):
     # UploadFile is FastAPI's container for incoming files
     
 
@@ -44,7 +54,7 @@ async def upload_file(file: UploadFile, background_tasks: BackgroundTasks , db: 
     db.refresh(upload_row) 
 
 
-    background_tasks.add_task(run_ai_pipeline, upload_row.id, path, extension)
+    queue.enqueue(run_ai_pipeline, upload_row.id, path, extension)
 
     # Returns a 201 response with details about the saved file
     return {
